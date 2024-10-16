@@ -42,6 +42,12 @@ const MenuScreen = ({ toggleMenu }) => {
                 >
                     <Text style={styles.menuItemText}>Perfil</Text>
                 </TouchableOpacity>
+                <TouchableOpacity 
+                    style={styles.menuItem}
+                    onPress={() => router.push('/alimentos')} // Navegação para a página Perfil
+                >
+                    <Text style={styles.menuItemText}>Login</Text>
+                </TouchableOpacity>
 
                 {/* Logout */}
                 <TouchableOpacity 

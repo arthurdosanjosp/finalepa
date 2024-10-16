@@ -8,7 +8,7 @@
     "userInterfaceStyle": "light",
     "scheme": "NutriFresh",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/logo.jpg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

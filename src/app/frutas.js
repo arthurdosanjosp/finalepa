@@ -6,15 +6,19 @@ import MenuScreen from './drawer';
 // Dados das categorias
 const categories = [
   { id: '1', title: 'Banana fatiada', price: '', image: require('./img/bb.png') },
-  { id: '2', title: 'Salada de fruta', price: '', image: require('./img/s.png') },
-  { id: '3', title: 'Fatias de manga', price: '', image: require('./img/mm.png') },
+  { id: '2', title: 'Suco de laranja', price: '', image: require('./img/juice.png') },
+  { id: '3', title: 'Salada de fruta', price: '', image: require('./img/s.png') },
+  { id: '4', title: 'Uvas', price: '', image: require('./img/uva.png') },
+  { id: '5', title: 'Fatias de manga', price: '', image: require('./img/mm.png') },
 ];
 
 // Receitas associadas às categorias
 const recipes = {
   '1': '1. Café da manhã:\n   - Mingau de aveia feito com leite ou bebida vegetal.\n   - Uma banana fatiada e misturada ao mingau.\n   - Um ovo cozido.\n   - Um chá ou café sem açúcar.',
-  '2': '2. Lanche da tarde:\n   - Uma salada de frutas frescas (como morango, kiwi e laranja).\n   - Um iogurte natural ou grego para acompanhar.\n   - Uma porção de granola sem açúcar ou castanhas.',
-  '3': '3. Janta:\n   - Salada verde com folhas, tomate, pepino e cenoura.\n   - Filé de salmão grelhado ou frango grelhado.\n   - Arroz integral ou quinoa.\n   -  Uma sobremesa leve de fatias de manga ou abacaxi.',
+  '2': '2. Café da manhã:\n   - Iogurte natural com chia e aveia.\n   - Uma porção de frutas (como morango, banana e kiwi).\n   -Torrada integral com um fio de mel.\n   - Um suco de laranja natural.',
+  '3': '3. Lanche da tarde:\n   - Uma salada de frutas frescas (como morango, kiwi e laranja).\n   - Um iogurte natural ou grego para acompanhar.\n   - Uma porção de granola sem açúcar ou castanhas.',
+  '4': '4. Lanche da tarde:\n   -Uma porção de frutas (como uvas ou uma maçã).\n   - Um punhado de nozes ou amêndoas.\n   - Uma fatia de pão integral com queijo branco e um pouco de geleia de frutas sem açúcar.',
+  '5': '5. Janta:\n   - Salada verde com folhas, tomate, pepino e cenoura.\n   - Filé de salmão grelhado ou frango grelhado.\n   - Arroz integral ou quinoa.\n   -  Uma sobremesa leve de fatias de manga ou abacaxi.',
 };
 
 // Definições de animação para o drawer
@@ -23,7 +27,8 @@ const screenWidth = Dimensions.get('window').width;
 export default function App() {
   const [expandedCardId, setExpandedCardId] = useState(null);
   const [menuVisible, setMenuVisible] = useState(false);
-  const [drawerAnimation] = useState(new Animated.Value(-screenWidth * 0.5)); // Menu começa fora da tela
+  const [drawerAnimation] = useState(new Animated.Value(-screenWidth * 0.5)); 
+  const [searchText, setSearchText] = useState('');
 
   const handleCardPress = (id) => {
     setExpandedCardId(expandedCardId === id ? null : id);
@@ -47,6 +52,10 @@ export default function App() {
       }).start();
     }
   };
+  const filteredCategories = categories.filter((item) =>
+    item.title.toLowerCase().includes(searchText.toLowerCase())
+  );
+
 
   return (
     <View style={styles.container}>
@@ -74,9 +83,11 @@ export default function App() {
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#A9A9A9" />
-        <TextInput 
-          placeholder="Pesquise opções saudáveis de frutas" 
+        <TextInput
+          placeholder="Pesquise opções saudáveis de doces"
           style={styles.searchInput}
+          value={searchText}
+          onChangeText={setSearchText}
         />
       </View>
 
@@ -91,7 +102,7 @@ export default function App() {
         </View>
 
         <FlatList
-          data={categories}
+          data={filteredCategories}
           renderItem={({ item }) => (
             <View style={styles.categoryItem}>
               {/* Exibir imagem */}
@@ -120,9 +131,15 @@ export default function App() {
               otherImage = require('./img/bnn.jpg');
               break;
             case '2':
-              otherImage = require('./img/sss.jpg');
+              otherImage = require('./img/suco.jpg');
               break;
             case '3':
+              otherImage = require('./img/sss.jpg');
+              break;
+            case '4':
+              otherImage = require('./img/uvas.jpg');
+              break;
+            case '5':
               otherImage = require('./img/mg.png');
               break;
             default:

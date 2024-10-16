@@ -6,13 +6,17 @@ import MenuScreen from './drawer';
 const categories = [
   { id: '1', title: 'Granola com mel', price: '', image: require('./img/granola.png') },
   { id: '2', title: 'Gelatina', price: '', image: require('./img/gel.png') },
-  { id: '3', title: 'Sorvete de iogurte', price: '', image: require('./img/yy.png') },
+  { id: '3', title: 'Bolo de banana', price: '', image: require('./img/cake.png') },
+  { id: '4', title: 'Sorvete de iogurte', price: '', image: require('./img/yy.png') },
+  { id: '5', title: 'Pudim', price: '', image: require('./img/pudim.png') },
 ];
 
 const recipes = {
   '1': '1. Café da manhã:\n   -  Pão integral com queijo cottage.\n   - Uma vitamina de frutas com leite desnatado.\n   - Uma pequena porção de granola com mel ou um quadrado de chocolate amargo.',
   '2': '2. Almoço:\n   - Salada colorida com folhas, cenoura, beterraba e grão-de-bico.\n   - Filé de frango grelhado ou peixe assado.\n   - Arroz integral ou quinoa.\n   - Uma sobremesa leve de gelatina sem açúcar com pedaços de fruta.',
-  '3': '3. Janta:\n   - Sopa de legumes ou caldo verde.\n   - Omelete de claras com espinafre e cogumelos.\n   - Salada de folhas verdes.\n   - Uma taça de salada de frutas com uma pequena bola de sorvete de iogurte ou frozen yogurt.',
+  '3': '3. Lanche da tarde:\n   - Iogurte natural com chia e morangos.\n   - Uma fatia de bolo integral de banana com aveia ou uma barrinha de cereal.\n   - Arroz integral ou quinoa.\n   -  Um café ou chá com um quadrado de chocolate amargo.',
+  '4': '4. Janta:\n   - Sopa de legumes ou caldo verde.\n   - Omelete de claras com espinafre e cogumelos.\n   - Salada de folhas verdes.\n   - Uma taça de salada de frutas com uma pequena bola de sorvete de iogurte ou frozen yogurt.',
+  '5': '5. Sobremesa após o jantar:\n   - Um copo pequeno de mousse de maracujá light ou pavê de frutas.\n   - Uma maçã assada com canela.\n   -  Uma pequena porção de pudim de chia com cacau e leite de amêndoas.',
 };
 
 const screenWidth = Dimensions.get('window').width;
@@ -28,7 +32,8 @@ const renderCategoryItem = ({ item }) => (
 export default function App() {
   const [expandedCardId, setExpandedCardId] = useState(null);
   const [menuVisible, setMenuVisible] = useState(false);
-  const [drawerAnimation] = useState(new Animated.Value(-screenWidth * 0.5)); // Menu começa fora da tela
+  const [drawerAnimation] = useState(new Animated.Value(-screenWidth * 0.5));
+  const [searchText, setSearchText] = useState('');
 
   const handleCardPress = (id) => {
     setExpandedCardId(expandedCardId === id ? null : id);
@@ -52,6 +57,9 @@ export default function App() {
       }).start();
     }
   };
+  const filteredCategories = categories.filter((item) =>
+    item.title.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   return (
     <View style={styles.container}>
@@ -79,9 +87,11 @@ export default function App() {
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#A9A9A9" />
-        <TextInput 
-          placeholder="Pesquise opções saudáveis de doces" 
+        <TextInput
+          placeholder="Pesquise opções saudáveis de doces"
           style={styles.searchInput}
+          value={searchText}
+          onChangeText={setSearchText}
         />
       </View>
 
@@ -96,7 +106,7 @@ export default function App() {
         </View>
 
         <FlatList
-          data={categories}
+          data={filteredCategories}
           renderItem={renderCategoryItem}
           keyExtractor={item => item.id}
           horizontal
@@ -121,16 +131,22 @@ export default function App() {
               otherImage = require('./img/ggg.jpg');
               break;
             case '3':
+              otherImage = require('./img/cc.jpg');
+              break;
+            case '4':
               otherImage = require('./img/ss.jpg');
+              break;
+            case '5':
+              otherImage = require('./img/pp.jpg');
               break;
             default:
               otherImage = require('./img/frango.jpg');
           }
 
           return (
-            <TouchableOpacity 
-              key={category.id} 
-              style={styles.restaurantCard} 
+            <TouchableOpacity
+              key={category.id}
+              style={styles.restaurantCard}
               onPress={() => handleCardPress(category.id)}
             >
               <Image source={otherImage} style={styles.categoryImage2} />

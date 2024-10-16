@@ -6,21 +6,26 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import MenuScreen from './drawer';
 
 const categories = [
-  { id: '1', title: 'Salgado de frango', price: '', image: require('./img/coxa4.png') },
+  { id: '1', title: 'Salgado de frango', price: '', image: require('./img/fr.png') },
   { id: '2', title: 'Filé de frango', price: '', image: require('./img/frango5.png') },
-  { id: '3', title: 'Salgado de carne magra', price: '', image: require('./img/carne.png') },
+  { id: '3', title: 'Ricota integral', price: '', image: require('./img/int.png') },
+  { id: '4', title: 'Salgado de carne magra', price: '', image: require('./img/carne.png') },
+  { id: '5', title: 'Quibe assado', price: '', image: require('./img/quibe2.png') },
 ];
 const recipes = {
   '1': '1. Café da manhã:\n   - Iogurte natural com frutas e aveia.\n   - Uma fatia de pão integral com queijo branco.\n   - Um suco natural de laranja.\n   - Um salgado assado de frango ou ricota.',
-  '2': '2. Almoço:\n   - Salada verde com folhas, tomate, cenoura e pepino.\n   - Filé de frango grelhado ou peixe assado.\n   - Arroz integral ou quinoa.\n   - Uma pequena porção de quiche integral de legumes.',
-  '3': '3. Lanche da tarde:\n   - Um smoothie de frutas com leite vegetal.\n   - Torradas integrais com patê de atum ou de grão-de-bico.\n   - Um salgado assado de carne magra ou peito de peru.',
+  '2': '1. Café da manhã:\n   - Suco verde (couve, maçã, limão e gengibre).\n   - Omelete de claras com espinafre.\n   - Uma ricota integral.\n   - Chá ou café sem açúcar.',
+  '3': '2. Almoço:\n   - Salada verde com folhas, tomate, cenoura e pepino.\n   - Filé de frango grelhado ou peixe assado.\n   - Arroz integral ou quinoa.\n   - Uma pequena porção de quiche integral de legumes.',
+  '4': '3. Lanche da tarde:\n   - Um smoothie de frutas com leite vegetal.\n   - Torradas integrais com patê de atum ou de grão-de-bico.\n   - Um salgado assado de carne magra ou peito de peru.',
+  '5': '3. Jantar:\n   - Sopa de abóbora ou legumes.\n   - Uma pequena porção de salada de folhas verdes com tomate e azeite de oliva.\n   - Um quibe assado de carne ou de grão-de-bico.\n   - Água aromatizada com hortelã e limão.',
 };
 const screenWidth = Dimensions.get('window').width;
 
 export default function App() {
   const [expandedCardId, setExpandedCardId] = useState(null);
   const [menuVisible, setMenuVisible] = useState(false);
-  const [drawerAnimation] = useState(new Animated.Value(-screenWidth * 0.5)); // Menu começa fora da tela
+  const [drawerAnimation] = useState(new Animated.Value(-screenWidth * 0.5));
+  const [searchText, setSearchText] = useState('');
 
   const handleCardPress = (id) => {
     setExpandedCardId(expandedCardId === id ? null : id);
@@ -44,6 +49,10 @@ export default function App() {
       }).start();
     }
   };
+  const filteredCategories = categories.filter((item) =>
+    item.title.toLowerCase().includes(searchText.toLowerCase())
+  );
+
 
   return (
     <View style={styles.container}>
@@ -71,9 +80,11 @@ export default function App() {
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#A9A9A9" />
-        <TextInput 
-          placeholder="Pesquise opções saudáveis de salgados" 
+        <TextInput
+          placeholder="Pesquise opções saudáveis de doces"
           style={styles.searchInput}
+          value={searchText}
+          onChangeText={setSearchText}
         />
       </View>
 
@@ -88,7 +99,7 @@ export default function App() {
         </View>
 
         <FlatList
-          data={categories}
+           data={filteredCategories}
           renderItem={({ item }) => (
             <View style={styles.categoryItem}>
               <Image source={item.image} style={styles.categoryImage} />
@@ -113,13 +124,19 @@ export default function App() {
           let otherImage;
           switch (category.id) {
             case '1':
-              otherImage = require('./img/prato0.jpg');
+              otherImage = require('./img/ssss.jpg');
               break;
             case '2':
               otherImage = require('./img/prato2.jpg');
               break;
             case '3':
+              otherImage = require('./img/ricota.jpg');
+              break;
+            case '4':
               otherImage = require('./img/prato3.jpeg');
+              break;
+            case '5':
+              otherImage = require('./img/quibe.jpg');
               break;
             default:
               otherImage = require('./img/frango.jpg');

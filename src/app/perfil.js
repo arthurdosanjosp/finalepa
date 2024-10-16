@@ -1,20 +1,71 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 
 const EditProfileScreen = () => {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [bio, setBio] = useState('');
+    const [originalData, setOriginalData] = useState({}); // Estado para armazenar dados originais
+    const [showPassword, setShowPassword] = useState(false); 
+
     const router = useRouter();
+
+    // Função para buscar dados do AsyncStorage
+    useEffect(() => {
+        const loadUserData = async () => {
+            try {
+                const storedUserData = await AsyncStorage.getItem('userData');
+                if (storedUserData) {
+                    const userData = JSON.parse(storedUserData);
+                    setFullName(userData.name);
+                    setEmail(userData.email);
+                    setPassword(userData.password);
+                    setPhoneNumber(userData.phoneNumber || ''); // Suporte para número de telefone
+                    setOriginalData(userData); // Armazena os dados originais
+                }
+            } catch (error) {
+                console.error("Erro ao carregar os dados:", error);
+                Alert.alert('Erro', 'Não foi possível carregar os dados do perfil.');
+            }
+        };
+
+        loadUserData();
+    }, []);
+
+    const handleSave = async () => {
+        // Verifica se houve alterações
+        if (
+            fullName !== originalData.name ||
+            email !== originalData.email ||
+            password !== originalData.password ||
+            phoneNumber !== originalData.phoneNumber
+        ) {
+            try {
+                // Atualiza os dados no AsyncStorage
+                const updatedUserData = { name: fullName, email, password, phoneNumber };
+                await AsyncStorage.setItem('userData', JSON.stringify(updatedUserData));
+                setOriginalData(updatedUserData); // Atualiza os dados originais após salvar
+                Alert.alert('Sucesso', 'Perfil atualizado com sucesso!');
+            } catch (error) {
+                console.error("Erro ao salvar os dados:", error);
+                Alert.alert('Erro', 'Não foi possível salvar os dados.');
+            }
+        } else {
+            Alert.alert('Atenção', 'Nenhuma alteração foi feita.');
+        }
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()}>
-                    <Text style={styles.backArrow}>{'<'}</Text>
-                </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push('/salgados')}>
+    <Text style={styles.backArrow}>{'<'}</Text>
+</TouchableOpacity>
+
                 <Text style={styles.headerText}>Perfil</Text>
             </View>
 
@@ -29,7 +80,7 @@ const EditProfileScreen = () => {
             </View>
 
             <View style={styles.form}>
-                <Text style={styles.label}>NOME COMPLETO</Text>
+                <Text style={styles.label}>NOME</Text>
                 <TextInput
                     style={styles.input}
                     value={fullName}
@@ -44,6 +95,26 @@ const EditProfileScreen = () => {
                     keyboardType="email-address"
                 />
 
+                <Text style={styles.label}>SENHA</Text>
+                <View style={styles.passwordContainer}>
+                    <TextInput
+                        style={styles.input}
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry={!showPassword} // Alterna entre visível/invisível
+                    />
+                    <TouchableOpacity
+                        style={styles.eyeIcon}
+                        onPress={() => setShowPassword(!showPassword)} // Alterna visibilidade
+                    >
+                        <Ionicons
+                            name={showPassword ? "eye-off" : "eye"}
+                            size={24}
+                            color="#7A7A7A"
+                        />
+                    </TouchableOpacity>
+                </View>
+
                 <Text style={styles.label}>NÚMERO</Text>
                 <TextInput
                     style={styles.input}
@@ -52,15 +123,7 @@ const EditProfileScreen = () => {
                     keyboardType="phone-pad"
                 />
 
-                <Text style={styles.label}>BIO</Text>
-                <TextInput
-                    style={styles.input}
-                    value={bio}
-                    onChangeText={setBio}
-                    multiline
-                />
-
-                <TouchableOpacity style={styles.saveButton}>
+                <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
                     <Text style={styles.saveButtonText}>SALVAR</Text>
                 </TouchableOpacity>
             </View>
@@ -140,6 +203,10 @@ const styles = StyleSheet.create({
         color: '#FFF',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    eyeIcon: {
+        position: 'absolute',
+        right: 10,
     },
 });
 

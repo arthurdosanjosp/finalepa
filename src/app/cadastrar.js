@@ -1,14 +1,38 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignUpScreen() {
   const router = useRouter();
 
-  const handleSignUp = () => {
-    // Lógica de cadastro (mantida)
-    router.push('/alimentos');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const handleSignUp = async () => {
+    // Validações simples
+    if (!name || !email || !password || !confirmPassword) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Erro', 'As senhas não correspondem.');
+      return;
+    }
+
+    try {
+      // Salvando os dados no AsyncStorage
+      await AsyncStorage.setItem('userData', JSON.stringify({ name, email, password }));
+      Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
+      router.push('/perfil');
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Erro', 'Ocorreu um erro ao salvar os dados. Tente novamente.');
+    }
   };
 
   return (
@@ -28,6 +52,8 @@ export default function SignUpScreen() {
           style={styles.input}
           placeholder="Digite seu nome"
           placeholderTextColor="#999"
+          value={name}
+          onChangeText={setName}
         />
         
         <Text style={styles.label}>Email</Text>
@@ -36,27 +62,29 @@ export default function SignUpScreen() {
           placeholder="Digite seu email"
           placeholderTextColor="#999"
           keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
         />
         
         <Text style={styles.label}>Senha</Text>
-        <View>
-          <TextInput
-            style={styles.input}
-            placeholder="Digite sua senha"
-            placeholderTextColor="#999"
-            secureTextEntry={true}
-          />
-        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Digite sua senha"
+          placeholderTextColor="#999"
+          secureTextEntry={true}
+          value={password}
+          onChangeText={setPassword}
+        />
 
         <Text style={styles.label}>Repita a Senha</Text>
-        <View>
-          <TextInput
-            style={styles.input}
-            placeholder="Repita sua senha"
-            placeholderTextColor="#999"
-            secureTextEntry={true}
-          />
-        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Repita sua senha"
+          placeholderTextColor="#999"
+          secureTextEntry={true}
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+        />
         
         <TouchableOpacity style={styles.button} onPress={handleSignUp}>
           <Text style={styles.buttonText}>Cadastrar</Text>
@@ -68,7 +96,6 @@ export default function SignUpScreen() {
 
 const styles = StyleSheet.create({
   container: {
-  
     backgroundColor: '#0C0C1C',
     paddingHorizontal: 20,
     justifyContent: 'center',
